@@ -53,6 +53,9 @@ class SettingsScreenState extends State<SettingsScreen> {
   String aboutMe = "";
   String photoUrl = "";
 
+  final FocusNode nicknameFocusNode = FocusNode();
+  final FocusNode aboutMeFocusNode = FocusNode();
+
   File imageFile;
   bool isLoading = false;
 
@@ -110,13 +113,13 @@ class SettingsScreenState extends State<SettingsScreen> {
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent),
                                 ),
-                                width: 200,
-                                height: 200,
+                                width: 250,
+                                height: 250,
                                 padding: EdgeInsets.all(20),
                               ),
                               imageUrl: photoUrl,
-                              width: 200,
-                              height: 200,
+                              width: 250,
+                              height: 250,
                               fit: BoxFit.cover,
                             ),
                             borderRadius: BorderRadius.all(Radius.circular(125)),
@@ -126,8 +129,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                         // Display new image
                         child: Image.file(
                             imageFile,
-                          width: 200,
-                          height: 200,
+                          width: 250,
+                          height: 250,
                           fit: BoxFit.cover,
                         ),
                         borderRadius: BorderRadius.all(Radius.circular(125)),
@@ -137,7 +140,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         icon: Icon(
                           Icons.camera_alt,
                           size: 100,
-                          color: Colors.white54.withOpacity(0.3),
+                          color: Colors.white54.withOpacity(0),
                         ),
                         onPressed: getImage,
                         padding: EdgeInsets.all(0),
@@ -150,11 +153,121 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
                 width: double.infinity,
                 margin: EdgeInsets.all(20),
+              ),
+              Column (
+                children: <Widget>[
+                  Padding(padding: EdgeInsets.all(1), child: isLoading ? circularProgress() : Container(),),
+
+                  Container(
+                    child: Text(
+                        "Profile Name: ",
+                      style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, color: Colors.lightBlue),
+                    ),
+                    margin: EdgeInsets.only(left: 10,bottom: 5, top: 10),
+                  ),
+
+                  Container(
+                    child: Theme(
+                      data: Theme.of(context).copyWith(primaryColor: Colors.lightBlue),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: "Your name here",
+                          contentPadding: EdgeInsets.all(5),
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                        controller: nicknameTextEditingController,
+                        onChanged: (value) {
+                          nickname = value;
+                        },
+                        focusNode: nicknameFocusNode,
+                      ),
+                    ),
+                    margin: EdgeInsets.only(left: 30, right: 30),
+                  ),
+
+
+                  Container(
+                    child: Text(
+                      "About Me: ",
+                      style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, color: Colors.lightBlue),
+                    ),
+                    margin: EdgeInsets.only(left: 10,bottom: 5, top: 10),
+                  ),
+
+                  Container(
+                    child: Theme(
+                      data: Theme.of(context).copyWith(primaryColor: Colors.lightBlue),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: "A fun fact about yourself",
+                          contentPadding: EdgeInsets.all(5),
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                        controller: aboutMeTextEditingController,
+                        onChanged: (value) {
+                          aboutMe = value;
+                        },
+                        focusNode: aboutMeFocusNode,
+                      ),
+                    ),
+                    margin: EdgeInsets.only(left: 30, right: 30),
+                  ),
+
+
+
+                ],
+                crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+
+              // Add buttons
+              Container(
+                child: FlatButton(
+                  onPressed: ()=>print("clicked"),
+                  child: Text(
+                    "Update",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  color: Colors.lightBlueAccent,
+                  highlightColor: Colors.grey,
+                  splashColor: Colors.transparent,
+                  textColor: Colors.white,
+                  padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
+                ),
+                margin: EdgeInsets.only(top: 50, bottom: 1)
+              ),
+
+              // Logout button
+              Padding(
+                padding: EdgeInsets.only(left: 50, right: 50),
+                child: RaisedButton(
+                  color: Colors.red,
+                  onPressed: logoutUser,
+                  child: Text(
+                    "Logout",
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ),
               )
+
             ],
           ),
+          padding: EdgeInsets.only(left: 15,right: 15),
         ),
       ],
     );
+  }
+
+
+
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
+  Future<Null> logoutUser() async {
+    await FirebaseAuth.instance.signOut();
+    await googleSignIn.disconnect();
+    await googleSignIn.signOut();
+    
+    this.setState(() {isLoading = false;});
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+        builder: (context) => MyApp()), (Route<dynamic> route) => false);
   }
 }

@@ -71,21 +71,11 @@ class HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold (
       appBar: homePageHeader(),
-      body :  RaisedButton.icon(onPressed: logoutUser,
-        icon: Icon(Icons.close), label: Text("Sign out"))
+
     );
   }
 
 
-  final GoogleSignIn googleSignIn = GoogleSignIn();
-
-  Future<Null> logoutUser() async {
-    await FirebaseAuth.instance.signOut();
-    await googleSignIn.disconnect();
-    await googleSignIn.signOut();
-    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-        builder: (context) => MyApp()), (Route<dynamic> route) => false);
-  }
 }
 
 
