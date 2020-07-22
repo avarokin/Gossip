@@ -21,12 +21,17 @@ class HomeScreen extends StatefulWidget {
   HomeScreen({Key key, @required this.currentUserId}) : super(key: key);
 
   @override
-  State createState() => HomeScreenState();
+  State createState() => HomeScreenState(currentUserId: currentUserId);
 }
 
 class HomeScreenState extends State<HomeScreen> {
 
   TextEditingController searchTextEditingController = TextEditingController();
+  Future<QuerySnapshot> searchResultsFuture;
+  final String currentUserId;
+
+  HomeScreenState({Key key, @required this.currentUserId});
+
 
   homePageHeader() {
     return AppBar(
@@ -57,6 +62,7 @@ class HomeScreenState extends State<HomeScreen> {
               onPressed: emptyTextFormField,
             )
           ),
+          onFieldSubmitted: searching,
         ),
       ),
     );
@@ -66,24 +72,127 @@ class HomeScreenState extends State<HomeScreen> {
       searchTextEditingController.clear();
     }
 
+    searching( String username ) {
+      Future<QuerySnapshot> allFoundUsers = Firestore.instance.collection("users")
+          .where('nickname', isGreaterThanOrEqualTo: username).getDocuments();
+
+      searchResultsFuture = allFoundUsers;
+    }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold (
       appBar: homePageHeader(),
+      body: (searchResultsFuture == null) ? noResultsScreen() : foundScreen(),
 
     );
   }
 
+  noResultsScreen() {
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    return Container(
+      child: Center(
+        child: ListView(
+          shrinkWrap: true,
+          children: <Widget>[
+            Icon(Icons.group, color: Colors.lightBlue, size: 200,),
+            Text(
+              "Search Results",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.lightBlue, fontSize: 50, fontWeight: FontWeight.w400),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  foundScreen() {
+    return FutureBuilder(
+      future: searchResultsFuture,
+      builder: (context,dataSnapshot) {
+        if (dataSnapshot.hasData) {
+          List<UserResult> searchUserResult = [];
+          dataSnapshot.data.documents.forEach((document){
+            User user = User.fromDocument(document);
+            UserResult userResult = UserResult(user);
+
+            if (currentUserId != document["id"]) {
+              searchUserResult.add(userResult);
+            }
+          });
+          return ListView(children: searchUserResult,);
+
+        } else {
+          return circularProgress();
+        }
+      }
+    );
+  }
 
 }
 
 
 
-class UserResult extends StatelessWidget
-{
+class UserResult extends StatelessWidget {
+
+  final User user;
+  UserResult(this.user);
+
   @override
   Widget build(BuildContext context) {
 
+    return Padding(
+      padding: EdgeInsets.all(4),
+      child: Container(
+        color: Colors.white,
+        child: Column(
+          children: <Widget>[
+            GestureDetector(
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Colors.black,
+                  backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+                ),
+                title: Text(
+                  user.nickname,
+                  style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  "joined " + DateFormat("dd MMMM, yyyy - hh:mm:ss")
+                      .format(DateTime.fromMillisecondsSinceEpoch(int.parse(user.createdAt))),
+                  style: TextStyle(color: Colors.grey, fontSize: 14, fontStyle: FontStyle.italic),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
