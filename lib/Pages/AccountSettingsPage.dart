@@ -87,9 +87,71 @@ class SettingsScreenState extends State<SettingsScreen> {
       });
     }
 
-    //uploadImageToFierstoreAndStorage();
+    uploadImageToFirestoreAndStorage();
   }
 
+  Future uploadImageToFirestoreAndStorage() async {
+    String fileName = id;
+    StorageReference storageReference = FirebaseStorage.instance.ref().child(fileName);
+    StorageUploadTask storageUploadTask = storageReference.put(imageFile);
+    StorageTaskSnapshot storageTaskSnapshot;
+    storageUploadTask.onComplete.then((value) {
+      if (value.error == null) {
+        storageTaskSnapshot = value;
+        storageTaskSnapshot.ref.getDownloadURL().then((newImg) {
+          photoUrl = newImg;
+          
+          Firestore.instance.collection("users").document(id).updateData({
+            "photoUrl": photoUrl,
+            "aboutMe": aboutMe,
+            "nickname": nickname
+          }).then((data) async {
+            await preferences.setString("photoUrl", photoUrl);
+            await preferences.setString("aboutMe", aboutMe);
+            await preferences.setString("nickname", nickname);
+            setState(() {
+              isLoading = false;
+            });
+            Fluttertoast.showToast(msg: "Updated!");
+          });
+
+        }, onError: (error) {
+          setState(() {
+            isLoading = false;
+          });
+          Fluttertoast.showToast(msg: error.toString());
+        });
+      }
+
+    },onError: (error){
+      setState(() {
+        isLoading = false;
+      });
+      Fluttertoast.showToast(msg: error.toString());
+    });
+  }
+
+  void updateData() {
+    nicknameFocusNode.unfocus();
+    aboutMeFocusNode.unfocus();
+    setState(() {
+      isLoading = false;
+    });
+
+    Firestore.instance.collection("users").document(id).updateData({
+      "photoUrl": photoUrl,
+      "aboutMe": aboutMe,
+      "nickname": nickname
+    }).then((data) async {
+      await preferences.setString("photoUrl", photoUrl);
+      await preferences.setString("aboutMe", aboutMe);
+      await preferences.setString("nickname", nickname);
+      setState(() {
+        isLoading = false;
+      });
+      Fluttertoast.showToast(msg: "Updated!");
+    });
+  }
 
 
   @override
@@ -222,7 +284,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               // Add buttons
               Container(
                 child: FlatButton(
-                  onPressed: ()=>print("clicked"),
+                  onPressed: updateData,
                   child: Text(
                     "Update",
                     style: TextStyle(fontSize: 18),
