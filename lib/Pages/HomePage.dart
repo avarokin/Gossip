@@ -150,6 +150,7 @@ class UserResult extends StatelessWidget {
         child: Column(
           children: <Widget>[
             GestureDetector(
+              onTap: () => sendToChatPage(context),
               child: ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.black,
@@ -170,8 +171,16 @@ class UserResult extends StatelessWidget {
         ),
       ),
     );
-
   }
+
+
+  sendToChatPage ( BuildContext context ) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) =>
+        Chat(receiverId: user.id,
+            receiverAvatar: user.photoUrl,
+            receiverName: user.nickname )));
+  }
+
 }
 
 
