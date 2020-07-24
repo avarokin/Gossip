@@ -51,6 +51,7 @@ class Chat extends StatelessWidget {
         ),
         centerTitle: true,
       ),
+      body: ChatScreen(receiverId : receiverId,receiverAvatar: receiverAvatar ),
     );
 
 
@@ -59,17 +60,151 @@ class Chat extends StatelessWidget {
 
 class ChatScreen extends StatefulWidget {
 
+  final String receiverId;
+  final String receiverAvatar;
+
+  ChatScreen({
+    Key key,
+    @required this.receiverId,
+    @required this.receiverAvatar
+  }) : super(key:key);
+
   @override
-  State createState() => ChatScreenState();
+  State createState() => ChatScreenState(receiverId: receiverId,receiverAvatar: receiverAvatar);
 }
 
 
 
 
 class ChatScreenState extends State<ChatScreen> {
+
+  final String receiverId;
+  final String receiverAvatar;
+
+  ChatScreenState({
+    Key key,
+    @required this.receiverId,
+    @required this.receiverAvatar
+  });
+
+  final TextEditingController textEditingController = new TextEditingController();
+  final FocusNode focusNode = FocusNode();
+
+
   @override
   Widget build(BuildContext context) {
-
+    return WillPopScope(
+      child: Stack(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              createListOfMessages(),
+              // Input contollers
+              createInput(),
+            ],
+          )
+        ],
+      ),
+    );
   }
 
+  createListOfMessages() {
+    return Flexible(
+      child: Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlue),),
+      ),
+    );
+  }
+
+  createInput() {
+    return Container(
+      child: Row(
+        children: <Widget>[
+          // Image button
+          Material(
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 1),
+              child: IconButton(
+                icon: Icon(Icons.image, color: Colors.lightBlue),
+                onPressed: () => print("Clicked image."),
+              ),
+            ),
+            color: Colors.white,
+          ),
+
+          // Emoji button
+          Material(
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 1),
+              child: IconButton(
+                icon: Icon(Icons.face, color: Colors.lightBlue),
+                onPressed: () => print("Clicked emoji."),
+              ),
+            ),
+            color: Colors.white,
+          ),
+
+          // Text field
+          Flexible(
+            child: Container(
+              child: TextField(
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+                controller: textEditingController,
+                decoration: InputDecoration.collapsed(
+                  hintText: "Type a message",
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+                focusNode: focusNode,
+              ),
+            ),
+          ),
+
+          // Send button
+          Material(
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 8),
+              child: IconButton(
+                icon: Icon(Icons.send),
+                color: Colors.lightBlue,
+                onPressed: ()=>print("Clicked send."),
+              ),
+            ),
+            color: Colors.white,
+          )
+        ],
+      ),
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: Colors.grey,
+            width: 0.5,
+          ),
+        ),
+        color: Colors.white,
+      ),
+    );
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
