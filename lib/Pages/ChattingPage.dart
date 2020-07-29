@@ -74,12 +74,20 @@ class ChatScreen extends StatefulWidget {
 }
 
 
-
-
 class ChatScreenState extends State<ChatScreen> {
 
   final String receiverId;
   final String receiverAvatar;
+  bool isDisplaySticker;
+  bool isLoading;
+
+  File imageFile;
+  String imageUrl;
+
+  String chatID;
+  SharedPreferences preferences;
+  String id;
+  var listMessage;
 
   ChatScreenState({
     Key key,
@@ -88,8 +96,41 @@ class ChatScreenState extends State<ChatScreen> {
   });
 
   final TextEditingController textEditingController = new TextEditingController();
+  final ScrollController listScrollController = ScrollController();
   final FocusNode focusNode = FocusNode();
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    focusNode.addListener(onFocusChange);
+
+    this.isDisplaySticker = false;
+    this.isLoading = false;
+    chatID = "";
+    readLocalStorage();
+  }
+
+  readLocalStorage() async {
+    preferences = await SharedPreferences.getInstance();
+    id = preferences.get("id") ?? "";
+    if (id.hashCode <= receiverId.hashCode) {
+      chatID = '$id-$receiverId';
+    } else {
+      chatID = '$receiverId-$id';
+    }
+    Firestore.instance.collection("users").document(id).updateData({'chattingWith' : receiverId});
+    setState(() {});
+  }
+
+  onFocusChange() {
+    if (focusNode.hasFocus) {
+      setState(() {
+        this.isDisplaySticker = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,20 +141,187 @@ class ChatScreenState extends State<ChatScreen> {
             children: <Widget>[
               createListOfMessages(),
               // Input contollers
+
+              // Show emoji pane
+              (isDisplaySticker ? createStickers() : Container()),
+              // Input controllers
               createInput(),
             ],
-          )
+          ),
+          createLoading(),
         ],
       ),
+      onWillPop: onBackPush,
+    );
+  }
+
+  Future<bool> onBackPush() {
+    if (isDisplaySticker) {
+      setState(() {
+        isDisplaySticker = false;
+      });
+    } else {
+      // TODO
+      Navigator.pop(context);
+    }
+
+    return Future.value(false);
+  }
+
+  createLoading() {
+    return Positioned(
+      child: isLoading? circularProgress() : Container(),
+    );
+  }
+
+  createStickers() {
+    return Container(
+      child: Column(
+        children: <Widget>[
+
+          Row(
+            children: <Widget>[
+              FlatButton(
+                onPressed: () => onSendMessage("mimi1",2),
+                child: Image.asset(
+                  "images/mimi1.gif",
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              FlatButton(
+                onPressed: () => onSendMessage("mimi2",2),
+                child: Image.asset(
+                  "images/mimi2.gif",
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              FlatButton(
+                onPressed: () => onSendMessage("mimi3",2),
+                child: Image.asset(
+                  "images/mimi3.gif",
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          ),
+
+          Row(
+            children: <Widget>[
+              FlatButton(
+                onPressed: () => onSendMessage("mimi4",2),
+                child: Image.asset(
+                  "images/mimi4.gif",
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              FlatButton(
+                onPressed: () => onSendMessage("mimi5",2),
+                child: Image.asset(
+                  "images/mimi5.gif",
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              FlatButton(
+                onPressed: () => onSendMessage("mimi6",2),
+                child: Image.asset(
+                  "images/mimi6.gif",
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          ),
+
+          Row(
+            children: <Widget>[
+              FlatButton(
+                onPressed: () => onSendMessage("mimi7",2),
+                child: Image.asset(
+                  "images/mimi7.gif",
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              FlatButton(
+                onPressed: () => onSendMessage("mimi8",2),
+                child: Image.asset(
+                  "images/mimi8.gif",
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              FlatButton(
+                onPressed: () => onSendMessage("mimi9",2),
+                child: Image.asset(
+                  "images/mimi9.gif",
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          ),
+
+
+        ],
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      ),
+
+      decoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.grey,width: 0.5)), color: Colors.white),
+      padding: EdgeInsets.all(5),
+      height: 180,
     );
   }
 
   createListOfMessages() {
     return Flexible(
-      child: Center(
+
+      child: chatID == "" ? Center(
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlue),),
+      )
+          : StreamBuilder(
+       stream: Firestore.instance.collection("messages").document(chatID).collection(chatID)
+        .orderBy("timeStamp", descending: true).limit(20).snapshots(),
+
+        builder: (context, snapshot) {
+         if (!snapshot.hasData) {
+           return Center(
+             child: CircularProgressIndicator(
+               valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlue),),
+           );
+         } else {
+           {
+             listMessage = snapshot.data.documents;
+             return ListView.builder(
+               padding: EdgeInsets.all(10),
+               //itemBuilder: (context,index) => createItem(index,snapshot.data.documents[index]),
+               itemCount: snapshot.data.documents.length,
+               reverse: true,
+               controller: listScrollController,
+             );
+           }
+         }
+        },
       ),
+
+//
     );
   }
 
@@ -127,7 +335,7 @@ class ChatScreenState extends State<ChatScreen> {
               margin: EdgeInsets.symmetric(horizontal: 1),
               child: IconButton(
                 icon: Icon(Icons.image, color: Colors.lightBlue),
-                onPressed: () => print("Clicked image."),
+                onPressed: getImage,
               ),
             ),
             color: Colors.white,
@@ -139,7 +347,7 @@ class ChatScreenState extends State<ChatScreen> {
               margin: EdgeInsets.symmetric(horizontal: 1),
               child: IconButton(
                 icon: Icon(Icons.face, color: Colors.lightBlue),
-                onPressed: () => print("Clicked emoji."),
+                onPressed: getSticker,
               ),
             ),
             color: Colors.white,
@@ -170,7 +378,7 @@ class ChatScreenState extends State<ChatScreen> {
               child: IconButton(
                 icon: Icon(Icons.send),
                 color: Colors.lightBlue,
-                onPressed: ()=>print("Clicked send."),
+                onPressed: () => onSendMessage(textEditingController.text, 0),
               ),
             ),
             color: Colors.white,
@@ -190,6 +398,68 @@ class ChatScreenState extends State<ChatScreen> {
       ),
     );
   }
+
+  void onSendMessage(String content, int type) {
+
+    if (content == null) {
+      Fluttertoast.showToast(msg: "Empty message.");
+      return;
+    }
+
+    textEditingController.clear();
+
+    var docRef = Firestore.instance.collection("messages").document(chatID)
+        .collection(chatID).document(DateTime.now().millisecondsSinceEpoch.toString());
+
+    Firestore.instance.runTransaction((transaction) async {
+      await transaction.set(docRef, {
+        "idFrom" : id,
+        "idTo" : receiverId,
+        "timeStamp" : DateTime.now().millisecondsSinceEpoch.toString(),
+        "content" : content,
+        "type" : type,
+      },);
+    });
+
+    listScrollController.animateTo(0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+
+  }
+
+  void getSticker() {
+    focusNode.unfocus();
+    setState(() {
+      isDisplaySticker = !isDisplaySticker;
+    });
+  }
+
+  Future getImage() async {
+    imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (imageFile != null) {
+      isLoading = true;
+    }
+    uploadImage();
+  }
+
+  Future uploadImage() async {
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    StorageReference storageReference = FirebaseStorage.instance.ref().child("Chat Images").child(fileName);
+
+    StorageUploadTask storageUploadTask = storageReference.putFile(imageFile);
+    StorageTaskSnapshot storageTaskSnapshot = await storageUploadTask.onComplete;
+    storageTaskSnapshot.ref.getDownloadURL().then( (downloadUrl) {
+      imageUrl = downloadUrl;
+      setState(() {
+        isLoading = false;
+        onSendMessage(imageUrl, 1);
+      });
+    }, onError: (error) {
+      setState(() {
+        isLoading = false;
+        Fluttertoast.showToast(msg: error);
+      });
+    });
+  }
+
 }
 
 
