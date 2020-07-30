@@ -58,7 +58,7 @@ class LoginScreenState extends State<LoginScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.lightBlueAccent, Colors.blueAccent]
+            colors: [Colors.orange, Colors.deepOrange]
           )
         ),
         alignment: Alignment.center,
@@ -69,7 +69,7 @@ class LoginScreenState extends State<LoginScreen> {
             Text(
               "Gossip",
               style: TextStyle(fontSize: 90.0, color: Colors.white,
-              fontFamily: 'Sans-Serif'),
+              fontFamily: 'Serif'),
             ),
             GestureDetector(
               onTap: controlSignIn,
@@ -77,9 +77,9 @@ class LoginScreenState extends State<LoginScreen> {
                 children: <Widget>[
                   Container(
                     margin: new EdgeInsets.only(
-                        top: 30.0
+                        top: 50.0
                     ),
-                    width: 240,
+                    width: 260,
                     height: 50,
                     decoration: BoxDecoration(
                       image: DecorationImage(
@@ -142,7 +142,7 @@ class LoginScreenState extends State<LoginScreen> {
         // Write data to local
         currentUser = firebaseUser;
         await preferences.setString("id", currentUser.uid);
-        await preferences.setString("nickaname", currentUser.displayName);
+        await preferences.setString("nickname", currentUser.displayName);
         await preferences.setString("photoUrl", currentUser.photoUrl);
 
       } else {
@@ -150,7 +150,7 @@ class LoginScreenState extends State<LoginScreen> {
         // Write data to local
         currentUser = firebaseUser;
         await preferences.setString("id", documentSnapshots[0]["id"]);
-        await preferences.setString("nickaname", documentSnapshots[0]["nickname"]);
+        await preferences.setString("nickname", documentSnapshots[0]["nickname"]);
         await preferences.setString("photoUrl", documentSnapshots[0]["photoUrl"]);
         await preferences.setString("aboutMe", documentSnapshots[0]["aboutMe"]);
       }
