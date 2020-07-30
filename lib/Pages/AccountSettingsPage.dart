@@ -22,10 +22,10 @@ class Settings extends StatelessWidget {
         iconTheme: IconThemeData(
           color: Colors.white
         ),
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.deepOrangeAccent,
         title: Text(
           "Account Settings",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
         ),
         centerTitle: true,
       ),
@@ -173,29 +173,29 @@ class SettingsScreenState extends State<SettingsScreen> {
                               placeholder: (context,url) => Container(
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent),
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.deepOrangeAccent),
                                 ),
-                                width: 250,
-                                height: 250,
+                                width: 200,
+                                height: 200,
                                 padding: EdgeInsets.all(20),
                               ),
                               imageUrl: photoUrl,
-                              width: 250,
-                              height: 250,
+                              width: 200,
+                              height: 200,
                               fit: BoxFit.cover,
                             ),
-                            borderRadius: BorderRadius.all(Radius.circular(125)),
+                            borderRadius: BorderRadius.all(Radius.circular(100)),
                             clipBehavior: Clip.hardEdge,
                           ) : Icon(Icons.account_circle, size: 100,color: Colors.grey,)
                           : Material(
                         // Display new image
                         child: Image.file(
                             imageFile,
-                          width: 250,
-                          height: 250,
+                          width: 200,
+                          height: 200,
                           fit: BoxFit.cover,
                         ),
-                        borderRadius: BorderRadius.all(Radius.circular(125)),
+                        borderRadius: BorderRadius.all(Radius.circular(100)),
                         clipBehavior: Clip.hardEdge,
                       ),
                       IconButton(
@@ -223,14 +223,14 @@ class SettingsScreenState extends State<SettingsScreen> {
                   Container(
                     child: Text(
                         "Profile Name: ",
-                      style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, color: Colors.lightBlue),
+                      style: TextStyle(fontStyle: FontStyle.normal, fontWeight: FontWeight.w500, color: Colors.deepOrangeAccent),
                     ),
                     margin: EdgeInsets.only(left: 10,bottom: 5, top: 10),
                   ),
 
                   Container(
                     child: Theme(
-                      data: Theme.of(context).copyWith(primaryColor: Colors.lightBlue),
+                      data: Theme.of(context).copyWith(primaryColor: Colors.deepOrange),
                       child: TextField(
                         decoration: InputDecoration(
                           hintText: "Your name here",
@@ -251,14 +251,14 @@ class SettingsScreenState extends State<SettingsScreen> {
                   Container(
                     child: Text(
                       "About Me: ",
-                      style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, color: Colors.lightBlue),
+                      style: TextStyle(fontStyle: FontStyle.normal, fontWeight: FontWeight.w500, color: Colors.deepOrangeAccent),
                     ),
                     margin: EdgeInsets.only(left: 10,bottom: 5, top: 10),
                   ),
 
                   Container(
                     child: Theme(
-                      data: Theme.of(context).copyWith(primaryColor: Colors.lightBlue),
+                      data: Theme.of(context).copyWith(primaryColor: Colors.deepOrange),
                       child: TextField(
                         decoration: InputDecoration(
                           hintText: "A fun fact about yourself",
@@ -287,13 +287,13 @@ class SettingsScreenState extends State<SettingsScreen> {
                   onPressed: updateData,
                   child: Text(
                     "Update",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 20),
                   ),
-                  color: Colors.lightBlueAccent,
+                  color: Colors.deepOrangeAccent,
                   highlightColor: Colors.grey,
                   splashColor: Colors.transparent,
                   textColor: Colors.white,
-                  padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
+                  padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
                 ),
                 margin: EdgeInsets.only(top: 50, bottom: 1)
               ),

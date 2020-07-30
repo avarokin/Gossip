@@ -12,7 +12,7 @@ class FullPhoto extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: Colors.deepOrangeAccent,
         iconTheme: IconThemeData(
           color: Colors.white
         ),

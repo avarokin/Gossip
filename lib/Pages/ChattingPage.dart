@@ -29,7 +29,7 @@ class Chat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.deepOrange,
         actions: <Widget>[
           Padding(
             padding: EdgeInsets.all(8),
@@ -294,7 +294,7 @@ class ChatScreenState extends State<ChatScreen> {
 
       child: chatID == "" ? Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlue),),
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.deepOrange),),
       )
           : StreamBuilder(
        stream: Firestore.instance.collection("messages").document(chatID).collection(chatID)
@@ -304,7 +304,7 @@ class ChatScreenState extends State<ChatScreen> {
          if (!snapshot.hasData) {
            return Center(
              child: CircularProgressIndicator(
-               valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlue),),
+               valueColor: AlwaysStoppedAnimation<Color>(Colors.deepOrange),),
            );
          } else {
            {
@@ -344,7 +344,7 @@ class ChatScreenState extends State<ChatScreen> {
               padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
               width: 200,
               decoration: BoxDecoration(
-                color: Colors.lightBlueAccent,
+                color: Colors.deepOrangeAccent,
                 borderRadius: BorderRadius.circular(5),
               ),
               margin: EdgeInsets.only(bottom: isLastMessageR(index) ? 20 : 10, right: 10),
@@ -358,7 +358,7 @@ class ChatScreenState extends State<ChatScreen> {
                   child: CachedNetworkImage(
                     placeholder: (context,url) => Container(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent,),
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.deepOrangeAccent,),
                       ),
                       width: 200,
                       height: 200,
@@ -417,7 +417,7 @@ class ChatScreenState extends State<ChatScreen> {
                       child: CachedNetworkImage(
                         placeholder: (context,url) => Container(
                           child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent,),
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.deepOrangeAccent,),
                           ),
                           width: 35,
                           height: 35,
@@ -461,7 +461,7 @@ class ChatScreenState extends State<ChatScreen> {
                         child: CachedNetworkImage(
                           placeholder: (context,url) => Container(
                             child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent,),
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.deepOrangeAccent,),
                             ),
                             width: 200,
                             height: 200,
@@ -553,7 +553,7 @@ class ChatScreenState extends State<ChatScreen> {
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 1),
               child: IconButton(
-                icon: Icon(Icons.image, color: Colors.lightBlue),
+                icon: Icon(Icons.image, color: Colors.deepOrange),
                 onPressed: getImage,
               ),
             ),
@@ -565,7 +565,7 @@ class ChatScreenState extends State<ChatScreen> {
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 1),
               child: IconButton(
-                icon: Icon(Icons.face, color: Colors.lightBlue),
+                icon: Icon(Icons.face, color: Colors.deepOrange),
                 onPressed: getSticker,
               ),
             ),
@@ -596,7 +596,7 @@ class ChatScreenState extends State<ChatScreen> {
               margin: EdgeInsets.symmetric(horizontal: 8),
               child: IconButton(
                 icon: Icon(Icons.send),
-                color: Colors.lightBlue,
+                color: Colors.deepOrange,
                 onPressed: () => onSendMessage(textEditingController.text, 0),
               ),
             ),

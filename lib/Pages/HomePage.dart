@@ -35,28 +35,29 @@ class HomeScreenState extends State<HomeScreen> {
 
   homePageHeader() {
     return AppBar(
+
       automaticallyImplyLeading: false,
       actions: <Widget>[
         IconButton(
-          icon: Icon(Icons.settings, size: 30, color: Colors.white,),
+          icon: Icon(Icons.settings, size: 25, color: Colors.white,),
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
           },
     ),
     ],
-      backgroundColor: Colors.lightBlue,
+      backgroundColor: Colors.deepOrangeAccent,
       title: Container(
         margin: new EdgeInsets.only(bottom: 5),
         child: TextFormField(
           style: TextStyle(fontSize: 20, color: Colors.white),
           controller: searchTextEditingController,
           decoration: InputDecoration(
-            hintText: "Search for users...",
-            hintStyle: TextStyle(color: Colors.white),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+            hintText: " Search here...",
+            hintStyle: TextStyle(color: Colors.white70),
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
             focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
             filled: true,
-            prefixIcon: Icon(Icons.person_pin, color: Colors.white, size: 30,),
+            prefixIcon: Icon(Icons.supervised_user_circle, color: Colors.white, size: 30,),
             suffixIcon: IconButton(
               icon: Icon(Icons.clear, color: Colors.white,),
               onPressed: emptyTextFormField,
@@ -96,11 +97,11 @@ class HomeScreenState extends State<HomeScreen> {
         child: ListView(
           shrinkWrap: true,
           children: <Widget>[
-            Icon(Icons.group, color: Colors.lightBlue, size: 200,),
+            Icon(Icons.group, color: Colors.deepOrange, size: 180,),
             Text(
-              "Search Results",
+              "Search results",
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.lightBlue, fontSize: 50, fontWeight: FontWeight.w400),
+              style: TextStyle(color: Colors.deepOrange, fontSize: 40, fontWeight: FontWeight.w300),
             )
           ],
         ),
@@ -144,7 +145,7 @@ class UserResult extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Padding(
-      padding: EdgeInsets.all(4),
+      padding: EdgeInsets.all(1),
       child: Container(
         color: Colors.white,
         child: Column(
@@ -155,15 +156,16 @@ class UserResult extends StatelessWidget {
                 leading: CircleAvatar(
                   backgroundColor: Colors.black,
                   backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+                  radius: 27,
                 ),
                 title: Text(
                   user.nickname,
-                  style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.w400),
                 ),
                 subtitle: Text(
                   "joined " + DateFormat("dd MMMM, yyyy - hh:mm:ss")
                       .format(DateTime.fromMillisecondsSinceEpoch(int.parse(user.createdAt))),
-                  style: TextStyle(color: Colors.grey, fontSize: 14, fontStyle: FontStyle.italic),
+                  style: TextStyle(color: Colors.grey, fontSize: 15, fontStyle: FontStyle.italic),
                 ),
               ),
             )
